@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>上班积分任务 · 海盐版</title>
+<style>
+:root{
+  --bg:#120d1c; --card:#1d1530; --card2:#251b3d; --line:#352a52;
+  --pink:#ff4d7d; --pink2:#ff8ab0; --gold:#ffc94d; --green:#58e08a;
+  --red:#ff6b6b; --txt:#f1eaf9; --dim:#9d8bb8;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0;}
+body{background:var(--bg); color:var(--txt); font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif; padding-bottom:130px; padding-top:64px; touch-action:manipulation;}
+#topbar{position:fixed; top:0; left:0; right:0; z-index:50; background:linear-gradient(180deg,#241a3a,#1a1330); border-bottom:1px solid var(--line); padding:10px 14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.top-day{color:var(--dim); font-size:13px;}
+.top-pts{font-size:22px; font-weight:900; color:var(--gold); margin-left:auto;}
+.top-pen{color:var(--red); font-weight:700; font-size:13px;}
+.top-chip{background:var(--pink); color:#fff; border-radius:10px; padding:2px 8px; font-size:12px; font-weight:700;}
+#gearBtn{margin-left:6px; background:var(--card2); border:1px solid var(--line); color:var(--txt); border-radius:10px; padding:6px 10px; cursor:pointer; font-size:15px;}
+main{max-width:560px; margin:0 auto; padding:12px;}
+.card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin:12px 0;}
+.card-h{display:flex; align-items:center; gap:8px; font-weight:800; font-size:16px; margin-bottom:8px; flex-wrap:wrap;}
+.tag{background:var(--card2); color:var(--dim); border-radius:8px; padding:2px 8px; font-size:12px;}
+.badge{background:var(--green); color:#06281a; border-radius:8px; padding:2px 8px; font-size:12px; font-weight:700;}
+.badge.pink{background:var(--pink); color:#fff;}
+.btn{background:var(--card2); color:var(--txt); border:1px solid var(--line); border-radius:10px; padding:8px 12px; font-size:14px; cursor:pointer; transition:filter .15s;}
+.btn:active{filter:brightness(1.25);}
+.btn:disabled{opacity:.4; pointer-events:none;}
+.btn.primary{background:var(--pink); border-color:var(--pink); color:#fff; font-weight:700;}
+.btn.gold{background:var(--gold); color:#221a00; border-color:var(--gold); font-weight:700;}
+.btn.warn{background:transparent; color:var(--red); border-color:var(--red);}
+.btn.ghost{background:transparent; color:var(--dim); border-color:var(--line);}
+.btn.big{width:100%; padding:13px; font-size:16px; font-weight:800;}
+.btn.small{padding:4px 10px; font-size:12px;}
+.btn.sel{background:var(--green); color:#06281a; border-color:var(--green);}
+.chip{background:var(--card2); border:1px solid var(--line); color:var(--txt); border-radius:999px; padding:6px 12px; font-size:13px; cursor:pointer; transition:all .15s;}
+.chip.sel{background:var(--pink); border-color:var(--pink); color:#fff; font-weight:700;}
+.chip.disabled{opacity:.3; pointer-events:none;}
+.row{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; align-items:center;}
+.sub{background:var(--card2); border-radius:10px; padding:9px; margin:9px 0;}
+.sub-h{font-weight:700; margin-bottom:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+.task-text{background:#120d1c; border:1px dashed var(--line); border-radius:8px; padding:8px; font-size:13px; color:#d9cdee; margin:6px 0; line-height:1.7;}
+.hint{color:var(--dim); font-size:12px; margin:6px 0; line-height:1.6;}
+.done-line{color:#cfe8d8; font-size:13px; margin:4px 0; line-height:1.6;}
+.log-line{font-size:13px; color:var(--dim); margin:3px 0; line-height:1.5;}
+.roll-line{font-size:15px; font-weight:700; margin:8px 0;}
+.roll-line b{color:var(--gold); font-size:20px;}
+.total-line{font-size:17px; font-weight:900; color:var(--gold); margin:8px 0;}
+.result-box{background:var(--card2); border:1px solid var(--pink); border-radius:10px; padding:10px; font-size:14px; line-height:1.8; margin:8px 0; color:#ffe3ee;}
+.warn-note{color:var(--red); font-size:12px; border:1px solid var(--red); border-radius:8px; padding:6px 8px; margin:6px 0; line-height:1.6;}
+.warn-card{border-color:var(--red);}
+.die{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; background:linear-gradient(145deg,#fff,#e8e0f5); color:#221a3a; font-weight:900; font-size:16px;}
+#bottombar{position:fixed; bottom:0; left:0; right:0; z-index:50; background:linear-gradient(0deg,#1a1330,#241a3a); border-top:1px solid var(--line); padding:8px 8px calc(8px + env(safe-area-inset-bottom)); display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
+.bbtn{background:var(--card2); border:1px solid var(--line); color:var(--txt); border-radius:10px; padding:8px 3px; font-size:12px; cursor:pointer; text-align:center; line-height:1.4;}
+.bbtn:active{filter:brightness(1.3);}
+.bbtn.span2{grid-column:span 2;}
+.bbtn b{display:block; font-size:11px; color:var(--pink2);}
+#diceOv{position:fixed; inset:0; background:rgba(10,6,18,.88); display:none; align-items:center; justify-content:center; z-index:100;}
+#diceOv.show{display:flex;}
+.dice-box{background:var(--card); border:1px solid var(--pink); border-radius:16px; padding:22px 30px; text-align:center; min-width:190px; box-shadow:0 10px 40px rgba(255,77,125,.25);}
+.dice-row{display:flex; gap:10px; justify-content:center; margin:14px 0;}
+.die-cell{width:56px; height:56px; border-radius:12px; background:linear-gradient(145deg,#fff,#e8e0f5); color:#221a3a; font-size:30px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 18px rgba(255,77,125,.45);}
+#diceLabel{color:var(--dim); font-size:13px;}
+#diceNote{color:var(--gold); font-size:12px; min-height:16px; margin-top:6px;}
+#modal{position:fixed; inset:0; background:rgba(10,6,18,.75); display:none; align-items:center; justify-content:center; z-index:90; padding:20px;}
+#modal.show{display:flex;}
+.modal-card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; max-width:430px; width:100%; max-height:82vh; overflow:auto;}
+.modal-card h3{margin:0 0 10px; color:var(--pink2);}
+.modal-card p{font-size:14px; line-height:1.7;}
+#toastBox{position:fixed; top:66px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; width:max-content; max-width:92vw;}
+.toast{background:#2a2042; border:1px solid var(--pink); color:var(--txt); border-radius:10px; padding:8px 16px; font-size:13px; animation:tin .25s; box-shadow:0 6px 20px rgba(0,0,0,.5); line-height:1.5;}
+.toast.out{opacity:0; transition:opacity .4s;}
+@keyframes tin{from{opacity:0; transform:translateY(-8px);}to{opacity:1;}}
+.tmr{font-family:Consolas,Menlo,monospace; font-size:17px; color:var(--gold); min-width:66px; text-align:center; font-weight:700;}
+details.rules{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:12px 0;}
+details.rules summary{cursor:pointer; font-weight:800; color:var(--pink2); font-size:14px;}
+details.rules p{font-size:12px; color:var(--dim); line-height:1.8; margin:8px 0 4px;}
+footer.note{text-align:center; color:#6d5b88; font-size:11px; padding:18px; line-height:1.7;}
+/* 年龄确认门 */
+#ageGate{position:fixed; inset:0; z-index:9999; background:rgba(8,4,14,.97); display:flex; align-items:center; justify-content:center; padding:20px;}
+#ageGate.hidden{display:none;}
+.age-box{background:var(--card); border:2px solid var(--pink); border-radius:16px; padding:24px 20px; max-width:340px; width:100%; text-align:center;}
+.age-icon{font-size:44px;}
+.age-box h2{color:var(--pink2); margin:8px 0;}
+.age-box p{color:var(--dim); font-size:13px; line-height:1.7; margin:10px 0 16px;}
+.age-box p strong{color:var(--gold);}
+.age-box .row{display:flex; gap:10px;}
+.age-box .btn{flex:1; padding:12px 8px;}
+.age-remember{display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; color:var(--dim); font-size:12px; cursor:pointer;}
+/* 水印 */
+#watermark{position:fixed; right:8px; bottom:64px; z-index:40; font-size:11px; color:rgba(255,255,255,.26); letter-spacing:2px; pointer-events:none; user-select:none;}
+#penBar{position:sticky; top:56px; z-index:49; background:linear-gradient(180deg,#3a1524,#2a0f1a); border-bottom:1px solid var(--red); padding:6px 12px; max-width:560px; margin:0 auto; box-sizing:border-box;}
+.penbar-h{font-size:12px; font-weight:700; color:var(--red); margin-bottom:4px; display:flex; align-items:center; gap:6px;}
+.pen-item{display:flex; align-items:center; gap:6px; font-size:12px; padding:3px 0; border-bottom:1px dashed rgba(255,108,108,.25);}
+.pen-item:last-child{border-bottom:none;}
+.pen-t{flex:1; color:#f3d9d9; line-height:1.4;}
+.pen-t.clickable{cursor:pointer;}
+.pen-t.clickable:hover{color:#ffb3c8; text-decoration:underline;}
+.pen-eye{font-size:10px; color:var(--dim); opacity:.75;}
+.pen-d{color:var(--gold); white-space:nowrap; font-size:11px;}
+.pen-x{background:transparent; border:1px solid var(--red); color:var(--red); border-radius:6px; padding:2px 8px; font-size:11px; cursor:pointer; white-space:nowrap;}
+.pen-toggle{background:transparent; border:none; color:var(--red); font-size:11px; cursor:pointer; text-decoration:underline;}
+.set-row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:10px 0; flex-wrap:wrap; font-size:13px;}
+.modal-card input{background:var(--card2); border:1px solid var(--line); color:var(--txt); border-radius:8px; padding:6px 8px; font-size:13px; flex:1; min-width:0;}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span class="top-day" id="topDay"></span>
+  <span class="top-pen" id="topPen"></span>
+  <span id="topChips"></span>
+  <span class="top-pts" id="topPts"></span>
+  <button id="gearBtn" onclick="openSettings()">⚙️</button>
+</div>
+
+<div id="penBar"></div>
+
+<main>
+  <details class="rules">
+    <summary>📜 规则速览（点击展开）</summary>
+    <p>① 服装自选：掷三次骰子分别决定上装/下装/内搭，点数对应积分 1→0 / 2→0.5 / 3→1 / 4→1.5 / 5→2 / 6→2.5，可主动选更高等级但积分不变，另有加减分选项（可重掷一次，-1分）。</p>
+    <p>② 日常任务：每项任务掷骰，积分 = 点数 × 任务系数，可主动选更高等级；失败不得分也不扣分。每完成一项日常后需检查大阴唇是否湿润（不准湿，每天至多触发一次）。</p>
+    <p>③ 赌徒挑战：成功加分、失败扣分，每项每天至多一次，每天至多选三项。下午两点结算后部分挑战锁定。</p>
+    <p>④ 条件任务：下午两点结算时 分数&lt;15 触发「专治拖延症」，&gt;22 触发「优等生的诱惑」。</p>
+    <p>⑤ 全局扣分：高潮积分归零；凸点/真空嫌疑 -2；乳头/小穴被看见 -5；违规获得快感 -2（页面底部按钮）。</p>
+    <p>⑥ 最终结算：&gt;31 奖励高潮；30~23 逐级加重；&lt;23 彻底失败（次日掷骰+1，惩罚点+10）。惩罚点于每天开始时集中自选一次（完全自选、可重复选择叠加，选择即扣点、在顶部横幅持续生效，可随时放弃加回），结算时未放弃的惩罚自动完成，多天惩罚显示剩余天数。</p>
+  </details>
+
+  <section id="punishSec"></section>
+  <section id="clothSec"></section>
+  <section id="dailySec"></section>
+  <section id="gamblerSec"></section>
+  <section id="condSec"></section>
+  <section id="settleSec"></section>
+
+  <footer class="note">仅供成年用户个人娱乐使用 · 注意人身安全与隐私，量力而行 · 数据保存在本浏览器 localStorage 中（清缓存会丢失，可在⚙️设置中导出备份）</footer>
+</main>
+
+<div id="bottombar">
+  <button class="bbtn" onclick="gOrgasm()">💦 高潮<b>积分归零</b></button>
+  <button class="bbtn" onclick="gFind()">👀 凸点/真空被发现<b>-2</b></button>
+  <button class="bbtn" onclick="gSee()">🫣 乳头/小穴被看见<b>-5</b></button>
+  <button class="bbtn" onclick="gPleasure()">🔥 擅自自慰获得快感<b>-2</b></button>
+  <button class="bbtn span2" onclick="undo()">↩️ 撤销上一步<b>最多保留5步</b></button>
+  <button class="bbtn span2" onclick="openStats()">📊 统计<b>生涯数据</b></button>
+</div>
+
+<div id="diceOv"><div class="dice-box">
+  <div id="diceLabel">🎲 掷骰中…</div>
+  <div class="dice-row" id="diceCells"></div>
+  <div id="diceNote"></div>
+</div></div>
+
+<div id="modal"></div>
+<div id="toastBox"></div>
+
+<!-- 年龄确认门（未满18岁自动退出） -->
+<div id="ageGate">
+  <div class="age-box">
+    <div class="age-icon">🔞</div>
+    <h2>年龄确认</h2>
+    <p>本游戏包含成人向内容，仅限<strong>年满18周岁</strong>的用户使用。<br>请如实确认你的年龄。</p>
+    <div class="row">
+      <button class="btn primary" id="ageYes">✅ 我已满18岁</button>
+      <button class="btn warn" id="ageNo">❌ 未满18岁</button>
+    </div>
+    <label class="age-remember"><input type="checkbox" id="ageRemember"> 本机不再提醒</label>
+  </div>
+</div>
+<div id="watermark">本游戏由海盐定制</div>
+
+<script>
+/* ============ 常量 ============ */
+const PTS = [0, 0.5, 1, 1.5, 2, 2.5];
+const LS_KEY = 'gongfen_haiyan_v1';
+
+const CLOTH_TOP = [
+  '长袖衬衫 / 短袖衬衫 + 任意薄外搭',
+  '短袖衬衫',
+  '无袖衬衫',
+  '深V衬衫（或正常衬衫开扣至类似效果）',
+  '露脐短衬衫',
+  '露南半球超短衬衫'
+];
+const CLOTH_BOT = [
+  '过膝短裙',
+  '齐膝短裙',
+  '齐大腿下四分之一部短裙',
+  '齐大腿中部短裙',
+  '齐大腿上四分之一部短裙',
+  '齐B短裙'
+];
+const CLOTH_IN = [
+  '深色内衣裤',
+  '蕾丝内衣裤',
+  '开裆内裤与镂空文胸',
+  '丁字内裤与乳贴',
+  '创口贴',
+  '真空'
+];
+
+const COMMUTE_CAR = [
+  '若有外搭就脱掉，打开一半车窗，解开上装所有扣子',
+  '若有内衣、外搭就脱掉，打开一半车窗，尽可能解开上装扣子至刚刚露点的程度',
+  '若有内衣、外搭就脱掉，打开一半车窗，尽可能解开上装扣子至刚刚露点的程度，下装裙腰脱至大腿',
+  '若有内衣裤、外搭就脱掉，打开一半车窗，尽可能解开上装扣子至刚刚露点的程度，下装裙腰脱至脚踝',
+  '若有内衣裤、外搭就脱掉，打开一半车窗，尽可能解开上装扣子至刚刚露点的程度，下装脱至脚踝，阴道插入假阳具',
+  '若有内衣裤、外搭就脱掉，打开三分之二车窗，尽可能解开上装扣子至刚刚露点的程度，脱光下装与鞋袜'
+];
+const COMMUTE_WALK = [
+  '若有外搭就脱掉',
+  '若有内衣、外搭就脱掉',
+  '若有内衣、外搭就脱掉，尽可能解开上装扣子至刚好不会露点',
+  '若有内衣裤、外搭就脱掉，尽可能解开上装扣子至刚好不会露点，塞好兔尾巴肛塞',
+  '若有内衣裤、外搭就脱掉，尽可能解开上装扣子至刚好不会露点，塞好兔尾巴肛塞，阴道塞入跳蛋并调至较有感觉的档位',
+  '若有内衣裤、外搭就脱掉，尽可能解开上装扣子至刚好不会露点，塞好长尾巴肛塞或铃铛肛塞，阴道塞入跳蛋并调至较有感觉的档位'
+];
+const MEETING = [
+  '保持大腿分开60°以上三次，每次十秒以上',
+  '整个开会期间保持大腿分开60°以上',
+  '整个开会期间保持裙子掀起，使内裤或下体完全暴露',
+  '若有内裤就脱掉，整个开会期间保持裙子掀起，使下体完全暴露',
+  '若有内裤就脱掉，整个开会期间保持裙子掀起，使下体完全暴露；另外保持大腿分开60°以上三次，每次十秒以上；全程塞着肛塞',
+  '若有内裤就脱掉，整个开会期间保持裙子掀起，使下体完全暴露；另外保持大腿分开60°以上三次，每次十秒以上；全程塞着肛塞；阴道塞入跳蛋并调至较有感觉的档位，保持5分钟，不许高潮'
+];
+const WORK = [
+  '与任意同事聊天搭话时保持大腿分开60°以上，至少3分钟',
+  '为自己定下一个需要20分钟内完成的工作目标，在保持腰部到膝盖完全暴露的情况下完成',
+  '拍摄一张阴部的清晰照片，必须处于自己的工位，且门不得反锁；拍照期间必须保持腰以下裸露；照片设置为手机锁屏保持到下班回家',
+  '保持腰以下裸露十五分钟。下装、内裤和鞋袜叠好放在距离自己一米外的地方；可额外准备外套应对突发情况；被打断视为任务失败不得分',
+  '在阴道塞入跳蛋并调至很有感觉的档位的情况下，与任意同事互动至少3分钟',
+  '保持腰以下裸露十五分钟，同时阴道塞入跳蛋并调至很有感觉的档位，寸止前至少坚持10分钟；下装、内裤和鞋袜叠好放在一米外；可备外套；被打断视为任务失败'
+];
+const TOILET = [
+  '隔间内全裸上厕所',
+  '隔间内全裸上厕所且不能锁门',
+  '隔间内全裸上厕所且门微微打开',
+  '隔间内全裸上厕所且门打开一半',
+  '隔间内全裸上厕所，并在隔间内完成一次寸止',
+  '隔间内全裸上厕所且门微微打开，并完成一次寸止'
+];
+const EAT = [
+  '面朝人多的地方就餐，吃饭全程保持大腿分开30°以上',
+  '面朝人多且有认识的异性的地方就餐，吃饭全程保持大腿分开30°以上',
+  '面朝人多且有认识的异性的地方就餐，吃饭全程保持大腿分开60°以上',
+  '若有内裤就脱掉，面朝人多且有认识的异性的地方就餐，吃饭全程保持大腿分开60°以上',
+  '若有内裤就脱掉，面朝人多且有认识的异性的地方就餐，吃饭全程保持大腿分开60°以上；阴道插入假阳具，用餐结束后方可取出',
+  '吃饭期间阴道塞入跳蛋并调至很有感觉的档位，不能高潮'
+];
+const ELEVATOR = [
+  '将手伸进衣服揉捏乳房5秒以上',
+  '一手伸进衣服揉捏乳房，一手伸进裙下扣扣，至少5秒',
+  '掀起裙子让内裤或下体完全暴露一次，至少5秒',
+  '掀起裙子让内裤或下体完全暴露一次，至少10秒',
+  '掀起裙子让内裤或下体完全暴露，直到电梯停下开门前才能放下',
+  '在电梯里至少有一个人的情况下，掀起裙子让内裤或下体完全暴露一次，至少5秒'
+];
+
+const DAILY_META = {
+  commute:{name:'上班路上', coeff:0.8, emoji:'🚗', items:{car:COMMUTE_CAR, walk:COMMUTE_WALK}},
+  meeting:{name:'开会', coeff:1.5, emoji:'💼', items:MEETING},
+  work:{name:'办公ing', coeff:1, emoji:'💻', items:WORK},
+  toilet:{name:'该上厕所了', coeff:0.7, emoji:'🚻', items:TOILET},
+  eat:{name:'我爱吃饭', coeff:0.6, emoji:'🍱', items:EAT},
+  elevator:{name:'电梯好玩', coeff:0.8, emoji:'🛗', items:ELEVATOR}
+};
+const DAILY_ORDER = ['commute','meeting','work','toilet','eat','elevator'];
+
+const GAMBLER = {
+  1:[
+    '使用假阳累积抽插50次，每一次需要插到最深处，无时限',
+    '保持光脚两个小时，且至少离开办公室一次',
+    '塞好肛塞至下班回到家（下午两点结算后不可用）',
+    '手握内裤与同事交流一分钟以上，手不能放在口袋里或者别的办法遮住',
+    '在自己工位里脱下内裤当发绳用，随后任务中可以视作无内裤'
+  ],
+  2:[
+    '阴道内塞着跳蛋并调至很有感觉的档位办公15分钟，不可以与其他任务行动同时计时，视线内始终有人可以看见你',
+    '在自己工位里保持腰以下裸露，直到下班（下午两点结算后不可用）',
+    '在自己工位里保持全裸5分钟',
+    '在任意办公室不锁门脱至全裸并保持全裸1分钟，可以移动躲藏',
+    '在厕所隔间门口脱至只剩鞋袜，再进隔间上厕所1次'
+  ],
+  3:[
+    '在男厕隔间脱至全裸，将衣服从上或者下递到隔壁无人隔间，再走到隔壁隔间回收衣服',
+    '在男厕隔间全裸寸止一次',
+    '在非办公室与厕所隔间的环境下完成一次寸止',
+    '在自己工位里保持全裸直到下班，上装下装需整齐放在无法直接伸手抓到的地方，鞋袜摆放在办公桌上，如有内衣裤也一并叠好放办公桌上（下午两点结算后不可用）'
+  ]
+};
+const GAMBLER_LOCKED = {1:[2], 2:[1], 3:[3]}; // 两点后锁定项（0-based）
+const GAMBLER_BASE = {1:5, 2:5, 3:4}; // 各池基础条目数（自定义任务追加在其后）
+
+/* 惩罚池：完全自选、可重复选择；n=选择次数，次数/时长/天数按 n 叠加计算 */
+const PUNISH = {
+  1:[
+    { short:'家门口全裸寸止', days:n=>1, text:n=>`在家门口完成${n}次全裸寸止。` },
+    { short:'家中禁穿任务服·饭前罚跪', days:n=>3*n, text:n=>`${3*n}天内家中不能穿任务衣服，且家中每顿饭前需要罚跪${5*n}分钟以上。姿势为屁股朝落地窗、阳台或类似可能被看到的方向土下座。` },
+    { short:'楼道全裸罚跪+寸止', days:n=>1, text:n=>`在楼道里全裸罚跪${15*n}分钟，并完成${n}次寸止，不得携带衣服出门。` },
+    { short:'电梯口全裸罚跪+寸止', days:n=>1, text:n=>`在电梯门口全裸罚跪${10*n}分钟，并完成${n}次寸止，不得携带衣服出门。` },
+    { short:'男厕全裸罚站+寸止', days:n=>1, text:n=>`在公司男厕隔间内全裸罚站${20*n}分钟，并完成${n}次寸止。` },
+    { short:'男厕不关门罚站+寸止', days:n=>1, text:n=>`在公司男厕隔间内不关门全裸罚站${20*n}分钟，并完成${n}次寸止。` }
+  ],
+  2:[
+    { short:'禁穿内衣裤·丝袜高跟', days:n=>2*n, text:n=>`${2*n}天内失去穿内衣裤的权力，出门必须穿过膝丝袜和5厘米以上高跟鞋。但这不意味着服装自选任务中可以选择「穿过膝丝袜」和「鞋跟高于5厘米」的加分，因为这是惩罚。` },
+    { short:'楼道3次寸止', days:n=>1, text:n=>`全裸不带衣服出门，在楼道里完成${3*n}次寸止，每次寸止后需要移动楼层，总时长至少${30*n}分钟。` },
+    { short:'电梯口3次寸止', days:n=>1, text:n=>`全裸不带衣服出门，在电梯门口累积完成${3*n}次寸止，完成任务前允许进入楼道躲避但不能回家，总时长至少${30*n}分钟。` },
+    { short:'男厕跳蛋放置(1h封顶)', days:n=>1, text:n=>`在公司男厕隔间不锁门全裸放置${20*n}分钟，期间阴道塞入跳蛋并调至很有感觉的档位，一旦高潮就重新计时，${1*n}小时封顶，衣服与自己不能处于同一隔间内。若被发现不能遮挡躲避。（无需计时器，玩家自行处理）` },
+    { short:'办公室全裸放置', days:n=>1, text:n=>`在任意办公室不锁门全裸放置${20*n}分钟，期间阴道塞入跳蛋并调至很有感觉的档位，若被发现不能遮挡躲避。` },
+    { short:'黑猫套装全天·禁内衣', days:n=>1*n, text:n=>`持续${1*n}天，出门上班至下班到家期间，需要保持佩戴以下装饰品：黑猫耳朵发箍、红色皮革项圈、黑猫尾巴肛塞，阴道塞入跳蛋并调至较有感觉的档位。除了吃饭喝水都要塞好深喉口塞，可以用黑色口罩掩饰，可以提前宣称喉咙痛不方便讲话。失去穿内衣裤的权力${1*n}天。` }
+  ],
+  3:[
+    { short:'禁内衣裤一周·电梯口寸止', days:n=>7*n, text:n=>`失去穿内衣裤的权力${1*n}周。全裸不带衣服出门，在电梯门口完成${3*n}次寸止，电梯临近两层以内可以躲避和遮挡，完成前不得回家。` },
+    { short:'工位全裸', days:n=>1*n, text:n=>`持续${1*n}天，在自己工位内保持全裸，不得躲避与遮掩。` },
+    { short:'通勤限定着装', days:n=>1*n, text:n=>`持续${1*n}天，上下班路上全身只能穿以下衣物：可盖住屁股的长款薄衬衫、过膝黑丝、鞋跟高于5厘米的鞋子。但这不意味着服装自选任务中可以选择「鞋跟高于5厘米」的加分，因为这是惩罚。` }
+  ]
+};
+const PUNISH_VAL = {1:1, 2:2, 3:5};
+
+const COND1 = [
+  '在工位上，阴道塞入跳蛋并调至很有感觉的档位',
+  '在工位上，用假阳具抽插自己',
+  '在厕所隔间，阴道塞入跳蛋并调至很有感觉的档位',
+  '在厕所隔间，全裸，阴道塞入跳蛋并调至很有感觉的档位',
+  '在厕所隔间，全裸，用假阳具抽插自己',
+  '在厕所隔间，全裸，不锁门，用假阳具抽插自己'
+];
+const COND2 = [
+  '若有内衣，五分钟内在工位脱掉，保持至下班',
+  '若有内衣裤，五分钟内在工位脱掉，保持至下班',
+  '若有内衣裤，五分钟内在工位脱掉，把内衣裤放在办公桌上，保持至下班',
+  '若有内衣裤和鞋袜，五分钟内在工位脱掉，把内衣裤、丝袜放在办公桌上，保持至下班',
+  '若有内衣裤和鞋袜，五分钟内在工位脱掉，把内衣裤、丝袜放在办公桌上，保持至下班；另外3分钟内用假阳具抽插自己60下',
+  '若有内衣裤、下装和鞋袜，五分钟内在工位脱掉，把内衣裤、下装、丝袜放在办公桌上，保持至下班'
+];
+const COND3 = [
+  '下班路上再次执行「上班路上」任务行动，完成任务后固定获得 +0.5 额外积分',
+  '立刻进行一次额外的「办公ing」任务行动，完成任务后固定获得 +1 额外积分',
+  '「再来一次」：阴道插入假阳具，重新投掷一次吧（直到下次任务完成）',
+  '今天剩下的所有任务，投掷点数 +1（6点封顶）',
+  '若有内裤：五分钟内立刻在工位脱掉内裤，今天失去穿内裤的权利；若无内裤：五分钟内脱掉丝袜并塞入阴道',
+  '立刻去厕所全裸完成一次寸止，限时十分钟，从现在开始计时'
+];
+
+/* ============ 状态 ============ */
+function defaultState(){
+  return {
+    v:2, day:1, points:0, penalty:0,
+    diceMod:0, prevFailMod:false, nextDayMod:false,
+    clothing:{done:false, rolls:[null,null,null], picks:[null,null,null], extras:{outer:false,st:false,plug:false,heels:false}, rerollUsed:false, points:0},
+    daily:{
+      commute:{done:false, plan:null, roll:null, pick:null, checks:{fold:false,water:false,wet:false}, pts:0},
+      meeting:{done:false, roll:null, pick:null, pts:0},
+      work:{done:false, roll:null, pick:null, mentioned:false, pts:0},
+      toilet:{done:false, roll:null, pick:null, drink:false, pts:0},
+      eat:{done:false, roll:null, pick:null, hide:0, pts:0},
+      elevator:{done:false, roll:null, pick:null, pts:0}
+    },
+    gambler:{slots:[
+      {status:'empty', pool:null, idx:null},
+      {status:'empty', pool:null, idx:null},
+      {status:'empty', pool:null, idx:null}
+    ]},
+    twoPM:{done:false, scoreNote:null, task1:null, task2:null},
+    wet:{triggered:false, finished:false, roll:null, rerollCount:0, result:'', extra:null},
+    activePenalties:[],
+    punishChosen:false,
+    penBarExpanded:false,
+    settled:false, lastResult:null,
+    stats:{high:0, fail:0, orgasm:0, cloth:0, daily:{}},
+    custom:{g1:[], g2:[], g3:[]}
+  };
+}
+function normalize(s){
+  const d = defaultState();
+  for(const k in d){ if(s[k]===undefined) s[k]=d[k]; }
+  if(!s.clothing) s.clothing=d.clothing;
+  /* 深度修复：daily 各子任务与判定字段逐项兜底，防止旧档/半损坏存档崩溃 */
+  for(const k in d.daily){
+    if(!s.daily[k] || typeof s.daily[k]!=='object'){ s.daily[k] = d.daily[k]; continue; }
+    const t = s.daily[k], dd = d.daily[k];
+    for(const f in dd){ if(t[f]===undefined) t[f] = dd[f]; }
+    if(dd.checks){
+      if(!t.checks || typeof t.checks!=='object') t.checks = Object.assign({}, dd.checks);
+      else for(const c in dd.checks){ if(t.checks[c]===undefined) t.checks[c] = dd.checks[c]; }
+    }
+  }
+  if(!s.gambler || !s.gambler.slots || s.gambler.slots.length!==3) s.gambler=d.gambler;
+  if(!s.twoPM) s.twoPM=d.twoPM;
+  if(!s.wet) s.wet=d.wet;
+  if(!s.wet.extra){ s.wet.extra = null; }
+  else if(typeof s.wet.extra==='object'){
+    const e = s.wet.extra, de = {key:'commute', plan:null, roll:null, pick:null, checks:{}, mentioned:false};
+    for(const f in de){ if(e[f]===undefined) e[f]=de[f]; }
+    if(!e.checks || typeof e.checks!=='object') e.checks = {};
+  }
+  /* 统计与自定义任务兜底 */
+  if(!s.stats || typeof s.stats!=='object') s.stats = d.stats;
+  else{
+    for(const f in d.stats){ if(s.stats[f]===undefined) s.stats[f] = d.stats[f]; }
+    if(!s.stats.daily || typeof s.stats.daily!=='object') s.stats.daily = {};
+  }
+  if(!s.custom || typeof s.custom!=='object') s.custom = d.custom;
+  else{ for(const g in d.custom){ if(!Array.isArray(s.custom[g])) s.custom[g] = []; } }
+  /* 旧版惩罚条目迁移到新结构（文本与天数按 n 动态计算） */
+  if(Array.isArray(s.activePenalties)){
+    s.activePenalties = s.activePenalties.map(p=>{
+      const def = (PUNISH[p.level] && PUNISH[p.level][p.idx]) ? PUNISH[p.level][p.idx] : null;
+      const count = p.count || 1;
+      return {
+        level:p.level, idx:p.idx,
+        short: def ? def.short : (p.short || '惩罚'),
+        count: count,
+        days: def ? def.days(count) : (p.days || 1)
+      };
+    }).filter(p=>p.level && p.idx!==undefined && p.idx!==null);
+  }
+  /* 旧版服装 picks 曾用1-6点数，统一为0-based索引 */
+  if(s.clothing && s.clothing.rolls && s.clothing.picks){
+    for(let i=0;i<3;i++){
+      const r = s.clothing.rolls[i], p = s.clothing.picks[i];
+      if(r && p!==null && p===r) s.clothing.picks[i] = p - 1;
+    }
+  }
+  return s;
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    return normalize(JSON.parse(raw));
+  }catch(e){ return null; }
+}
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
+const fmt = n => Math.round(n*10)/10;
+/* 积分统一入口：任何加减分都不会让积分小于0 */
+function addPoints(n){
+  const before = S.points;
+  S.points = Math.max(0, fmt(S.points + n));
+  if(S.stats && S.points > (S.stats.high||0)) S.stats.high = S.points;
+  return fmt(S.points - before);
+}
+
+let S = load() || defaultState();
+save();
+/* 自定义赌徒任务：追加到对应池（基础条目之后） */
+function applyCustom(){
+  const c = S.custom || (S.custom = defaultState().custom);
+  for(let p=1;p<=3;p++){
+    const base = GAMBLER_BASE[p];
+    GAMBLER[p].splice(base);
+    (c['g'+p]||[]).forEach(t=>{ if(typeof t==='string' && t.trim()) GAMBLER[p].push(t.trim()); });
+  }
+}
+applyCustom();
+
+/* ============ 工具 ============ */
+function toast(msg){
+  const box = document.getElementById('toastBox');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),420); }, 2600);
+}
+function showModal(html){
+  document.getElementById('modal').innerHTML = `<div class="modal-card">${html}</div>`;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+/* ============ 撤销（最多保留5步）与震动反馈 ============ */
+const UNDO_MAX = 5;
+let UNDO = [];
+function pushUndo(label){
+  UNDO.push({label:label, json:JSON.stringify(S)});
+  if(UNDO.length > UNDO_MAX) UNDO.shift();
+}
+function undo(){
+  if(!UNDO.length){ toast('没有可撤销的操作'); return; }
+  const u = UNDO.pop();
+  for(const id in T) stopTimer(id);
+  S = normalize(JSON.parse(u.json));
+  applyCustom();
+  save(); render();
+  buzz(15);
+  toast(`↩️ 已撤销：${u.label}`);
+}
+function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||15); }catch(e){} }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function effRoll(){
+  let r = 1 + Math.floor(Math.random()*6);
+  const m = (S.prevFailMod?1:0) + (S.diceMod?1:0);
+  return Math.min(r + m, 6);
+}
+function showDice(n, label){
+  document.getElementById('diceLabel').textContent = label || '🎲 掷骰中…';
+  const box = document.getElementById('diceCells');
+  box.innerHTML = '';
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span'); s.className='die-cell'; s.textContent='1'; box.appendChild(s);
+  }
+  document.getElementById('diceOv').classList.add('show');
+}
+function hideDice(){ document.getElementById('diceOv').classList.remove('show'); }
+function modNote(){
+  const m = (S.prevFailMod?1:0) + (S.diceMod?1:0);
+  return m ? `（含掷骰修正 +${m}，封顶6）` : '';
+}
+function doRoll(cb, label){
+  showDice(1, label);
+  document.getElementById('diceNote').textContent = modNote();
+  const cell = document.getElementById('diceCells').firstChild;
+  let i = 0;
+  const iv = setInterval(()=>{
+    cell.textContent = 1 + Math.floor(Math.random()*6);
+    if(++i >= 10){
+      clearInterval(iv);
+      const v = effRoll();
+      cell.textContent = v;
+      setTimeout(()=>{ hideDice(); cb(v); }, 700);
+    }
+  }, 70);
+}
+/* 三连掷（服装） */
+function clothRoll(){
+  showDice(3, '👗 掷三次骰子决定穿搭');
+  document.getElementById('diceNote').textContent = modNote();
+  const cells = document.getElementById('diceCells').children;
+  let i = 0;
+  const iv = setInterval(()=>{
+    for(let k=0;k<3;k++) cells[k].textContent = 1 + Math.floor(Math.random()*6);
+    if(++i >= 10){
+      clearInterval(iv);
+      const vals = [effRoll(), effRoll(), effRoll()];
+      for(let k=0;k<3;k++) cells[k].textContent = vals[k];
+      setTimeout(()=>{
+        hideDice();
+        S.clothing.rolls = vals;
+        S.clothing.picks = vals.map(v=>v-1);
+        save(); render();
+      }, 800);
+    }
+  }, 80);
+}
+
+/* ============ 计时器 ============ */
+const T = {};
+function startTimer(id, total, onEnd){
+  stopTimer(id);
+  T[id] = {total:(total==null?null:total), left:(total==null?null:total), elapsed:0, onEnd:(onEnd||null),
+    iv:setInterval(()=>tickTimer(id),1000)};
+  renderTimers();
+}
+function stopTimer(id){
+  const t = T[id]; if(!t) return {elapsed:0, left:0};
+  clearInterval(t.iv); delete T[id];
+  return {elapsed:t.elapsed, left:t.left};
+}
+function stopTimerKeep(id){
+  const r = stopTimer(id);
+  const el = document.querySelector(`[data-tid="${id}"]`);
+  if(el) el.textContent = fmtTime(r.total==null ? r.elapsed : r.left);
+}
+function tickTimer(id){
+  const t = T[id]; if(!t) return;
+  if(t.total==null){ t.elapsed++; }
+  else{
+    t.left--;
+    if(t.left<=0){
+      clearInterval(t.iv); delete T[id];
+      if(t.onEnd) t.onEnd(); else renderTimers();
+      return;
+    }
+  }
+  renderTimers();
+}
+function fmtTime(sec){
+  sec = Math.max(0, Math.round(sec));
+  const m = Math.floor(sec/60), s = sec%60;
+  return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function renderTimers(){
+  document.querySelectorAll('[data-tid]').forEach(el=>{
+    const id = el.getAttribute('data-tid');
+    const t = T[id];
+    if(t) el.textContent = t.total==null ? fmtTime(t.elapsed) : fmtTime(t.left);
+  });
+}
+function timerRow(id, total, label){
+  return `<div class="row timer-row">
+    <button class="btn small" onclick="startTimer('${id}',${total==null?'null':total})">▶ 计时</button>
+    <button class="btn small" onclick="stopTimerKeep('${id}')">⏸ 停止</button>
+    <span class="tmr" data-tid="${id}">00:00</span>
+    ${label?`<span class="tag">${label}</span>`:''}
+  </div>`;
+}
+
+/* ============ 全局扣分 ============ */
+function gOrgasm(){ pushUndo('全局高潮归零'); S.points=0; S.stats.orgasm=(S.stats.orgasm||0)+1; save(); render(); toast('💦 高潮！当前积分归零'); }
+function gFind(){ pushUndo('凸点/真空被发现 -2'); addPoints(-2); save(); render(); toast('👀 被怀疑凸点/真空 -2'); }
+function gSee(){ pushUndo('乳头/小穴被看见 -5'); addPoints(-5); save(); render(); toast('🫣 乳头/小穴被看见 -5'); }
+function gPleasure(){ pushUndo('违规快感 -2'); addPoints(-2); save(); render(); toast('🔥 违规获得快感 -2'); }
+
+/* ============ 惩罚清算（完全自选，可重复叠加） ============ */
+function punishShowPool(l){
+  if(S.punishChosen || S.penalty<=0) return;
+  let list = '';
+  PUNISH[l].forEach((def,idx)=>{
+    const exist = S.activePenalties.find(a=>a.level===l && a.idx===idx);
+    const n = exist ? exist.count+1 : 1;
+    const d = def.days(n);
+    const tag = d>1 ? `持续 ${d} 天` : '当日完成';
+    list += `<div class="sub" style="margin:6px 0"><div class="task-text" style="margin:0 0 6px">${def.text(n)}</div>
+      <div class="row"><span class="tag">${tag}</span>${exist?`<span class="tag">已选 ×${exist.count}</span>`:''}
+      <button class="btn primary small" style="margin-left:auto" onclick="punishPickTask(${l},${idx})">${exist?'再选一次（叠加为×'+(exist.count+1)+'）':'选择此任务'}</button></div></div>`;
+  });
+  showModal(`<h3>⚠️ ${['一','二','三'][l-1]}级惩罚池（每次 -${PUNISH_VAL[l]}点）</h3>
+  <div class="hint">完全自选、可重复选择；<b>n=选择次数</b>，下方展示的是「选择后」的实际效果（次数/时长/天数按 n 叠加）。</div>${list}
+  <div class="row"><button class="btn ghost" onclick="closeModal()">关闭</button></div>`);
+}
+function punishPickTask(l, idx){
+  if(S.punishChosen || S.penalty<=0) return;
+  pushUndo('选择惩罚任务');
+  const def = PUNISH[l][idx];
+  const deduct = Math.min(PUNISH_VAL[l], S.penalty);
+  S.penalty = Math.max(0, S.penalty - deduct);
+  const exist = S.activePenalties.find(a=>a.level===l && a.idx===idx);
+  if(exist){
+    exist.count++;
+    exist.days = def.days(exist.count);
+  }else{
+    S.activePenalties.push({level:l, idx:idx, short:def.short, count:1, days:def.days(1)});
+  }
+  if(S.penalty<=0) S.punishChosen = true;
+  closeModal();
+  save(); render();
+  toast(`⛓️ 已选择「${def.short}」×${exist ? exist.count : 1}，惩罚点 -${deduct}`);
+}
+function penaltyAbandon(pi){
+  const ap = S.activePenalties[pi]; if(!ap) return;
+  pushUndo('放弃惩罚任务');
+  const back = PUNISH_VAL[ap.level] * ap.count;
+  S.penalty += back;
+  S.activePenalties.splice(pi,1);
+  save(); render();
+  toast(`⛓️ 已放弃「${ap.short}${ap.count>1?' ×'+ap.count:''}」，惩罚点 +${back}（顺延至明日清算）`);
+}
+function togglePenBar(){ S.penBarExpanded = !S.penBarExpanded; save(); render(); }
+
+/* ============ 服装自选 ============ */
+function clothExtra(k){
+  S.clothing.extras[k] = !S.clothing.extras[k];
+  save(); render();
+}
+function clothReroll(){
+  if(S.clothing.rerollUsed) return;
+  pushUndo('服装重掷');
+  S.clothing.rerollUsed = true;
+  S.clothing.rolls = [null,null,null]; S.clothing.picks = [null,null,null];
+  save(); render();
+  clothRoll();
+}
+function pickCloth(i, v){ S.clothing.picks[i] = v; save(); render(); }
+function clothSubtotal(){
+  const c = S.clothing;
+  let s = 0;
+  for(let i=0;i<3;i++) if(c.rolls[i]) s += PTS[c.rolls[i]-1];
+  if(c.extras.outer) s -= 1;
+  if(c.extras.st) s += 1;
+  if(c.extras.plug) s += 1;
+  if(c.extras.heels) s += 1;
+  if(c.rerollUsed) s -= 1;
+  return s;
+}
+function clothConfirm(){
+  const c = S.clothing;
+  if(c.done || c.rolls.some(v=>v===null)) return;
+  pushUndo('服装积分结算');
+  c.points = clothSubtotal();
+  addPoints(c.points);
+  c.done = true;
+  S.stats.cloth = (S.stats.cloth||0) + 1;
+  save(); render();
+  buzz(20);
+  toast(`👗 服装积分 ${fmt(c.points)} 已计入`);
+}
+
+/* ============ 日常任务 ============ */
+function dailyPlan(kind){
+  S.daily.commute.plan = kind;
+  save(); render();
+}
+function dailyPlanReset(){
+  const st = S.daily.commute;
+  if(st.roll!==null) return;
+  st.plan = null; save(); render();
+}
+function dailyRoll(key){
+  doRoll(v=>{
+    S.daily[key].roll = v;
+    S.daily[key].pick = v-1;  /* 自动选中掷出的等级，可直接看任务内容，也可点更高等级 */
+    save(); render();
+  }, `🎲 ${DAILY_META[key].name} 掷骰`);
+}
+function dailyPick(key, i){
+  S.daily[key].pick = i;
+  save(); render();
+}
+/* 通用判定开关：勾选即时扣分、取消即时加回（日常任务与不准湿追加共用） */
+function toggleFlag(checks, flag, amount){
+  checks[flag] = !checks[flag];
+  addPoints(checks[flag] ? -amount : amount);
+  save(); render();
+}
+/* 一次性标记（只能开启）：即时扣分并提示 */
+function markOnce(st, flag, amount, msg){
+  if(st[flag]) return;
+  st[flag] = true;
+  addPoints(-amount);
+  save(); render();
+  toast(msg);
+}
+function dailyCheck(key, which){
+  toggleFlag(S.daily[key].checks, which, 0.5);
+}
+function dailyDrink(){
+  S.daily.toilet.drink = !S.daily.toilet.drink;
+  save(); render();
+}
+function eatHide(){
+  S.daily.eat.hide++;
+  addPoints(-0.5);
+  save(); render();
+  toast(`🛡️ 遮挡躲避 ×${S.daily.eat.hide}，共 -${fmt(S.daily.eat.hide*0.5)}`);
+}
+function workMention(){
+  const st = S.daily.work;
+  if(st.mentioned) return;
+  pushUndo('被提及锁屏照片 -1');
+  markOnce(st, 'mentioned', 1, '📱 被提及锁屏照片 -1');
+}
+function dailyDone(key){
+  const st = S.daily[key];
+  if(st.done) return;
+  if(st.pick===null){ toast('请先选择执行等级'); return; }
+  pushUndo(`完成「${DAILY_META[key].name}」`);
+  let pts = st.roll * DAILY_META[key].coeff;
+  if(key==='toilet' && st.drink) pts += 1;
+  st.pts = fmt(pts);
+  addPoints(st.pts);
+  st.done = true;
+  S.stats.daily[key] = (S.stats.daily[key]||0) + 1;
+  save(); render();
+  buzz(20);
+  toast(`✅ ${DAILY_META[key].name} 完成 +${fmt(st.pts)}`);
+  afterDaily();
+}
+function dailyFail(key){
+  const st = S.daily[key];
+  if(st.done) return;
+  if(!confirm(`放弃「${DAILY_META[key].name}」？不得分也不扣分。`)) return;
+  pushUndo(`放弃「${DAILY_META[key].name}」`);
+  st.done = true; st.pts = 0;
+  save(); render();
+  toast(`放弃 ${DAILY_META[key].name}，不得分`);
+  afterDaily();
+}
+function afterDaily(){
+  if(!S.wet.triggered && !S.settled && !S.wet.finished){
+    setTimeout(askWet, 300);
+  }
+}
+
+/* ============ 赌徒挑战（三槽自选） ============ */
+function gamblerAvailableTasks(pool){
+  /* 排除其他槽已选/已用的同项任务，以及两点后锁定的任务 */
+  const used = [];
+  S.gambler.slots.forEach(s=>{ if(s.pool===pool && s.idx!==null) used.push(s.idx); });
+  const locked = S.twoPM.done ? (GAMBLER_LOCKED[pool]||[]) : [];
+  const arr = [];
+  for(let i=0;i<GAMBLER[pool].length;i++){
+    if(used.includes(i)) continue;
+    if(locked.includes(i)) continue;
+    arr.push(i);
+  }
+  return arr;
+}
+function gamblerShowPool(si, pool){
+  const avail = gamblerAvailableTasks(pool);
+  if(!avail.length){ toast('该池已无可选任务'); return; }
+  let list = '';
+  avail.forEach(idx=>{
+    list += `<button class="btn" style="width:100%;margin:4px 0;text-align:left;line-height:1.5;height:auto;white-space:normal;word-break:break-word" onclick="gamblerPickTask(${si},${pool},${idx})">${esc(GAMBLER[pool][idx])}</button>`;
+  });
+  showModal(`<h3>🎰 槽${si+1} · ${pool}分任务池</h3>${list}<div class="row"><button class="btn ghost" onclick="closeModal()">取消</button></div>`);
+}
+function gamblerPickTask(si, pool, idx){
+  pushUndo(`赌徒挑战选任务（槽${si+1}）`);
+  S.gambler.slots[si] = {status:'active', pool:pool, idx:idx};
+  closeModal();
+  save(); render();
+  toast(`🎰 槽${si+1} 已选择任务，可随时完成或失败`);
+}
+function gamblerCancel(si){
+  if(S.gambler.slots[si].status!=='active') return;
+  pushUndo(`取消赌徒任务（槽${si+1}）`);
+  S.gambler.slots[si] = {status:'empty', pool:null, idx:null};
+  save(); render();
+}
+function gamblerResolve(si, ok){
+  const slot = S.gambler.slots[si];
+  if(!slot || slot.status!=='active') return;
+  pushUndo(`赌徒挑战结算（槽${si+1}）`);
+  addPoints(ok ? slot.pool : -slot.pool);
+  slot.status = ok ? 'done' : 'failed';
+  save(); render();
+  toast(ok ? `🎰 槽${si+1} 完成 +${slot.pool}` : `🎰 槽${si+1} 失败 -${slot.pool}`);
+}
+
+/* ============ 条件任务 ============ */
+function twoPM(){
+  if(S.twoPM.done) return;
+  pushUndo('模拟下午两点结算');
+  S.twoPM.done = true;
+  S.twoPM.scoreNote = fmt(S.points);
+  if(S.points < 15){
+    S.twoPM.task1 = {roll:null, started:false, stopped:false, finished:false, elapsed:0, result:''};
+    toast('🕑 分数<15，触发「专治拖延症」！');
+  }else if(S.points > 22){
+    S.twoPM.task2 = {roll:null, finished:false, result:''};
+    toast('🕑 分数>22，触发「优等生的诱惑」！');
+  }else{
+    toast('🕑 分数在15~22之间，无事发生');
+  }
+  save(); render();
+}
+/* 拖延症 */
+function cond1Roll(){ doRoll(v=>{ S.twoPM.task1.roll = v; save(); render(); }, '⏳ 专治拖延症掷骰'); }
+function cond1Start(){ S.twoPM.task1.started = true; save(); render(); startTimer('cond1', null); }
+function cond1Stop(){
+  const r = stopTimer('cond1');
+  S.twoPM.task1.elapsed = r.elapsed;
+  S.twoPM.task1.stopped = true;
+  save(); render();
+}
+function cond1Resolve(ok){
+  const t = S.twoPM.task1;
+  if(!t || t.finished) return;
+  stopTimer('cond1');
+  pushUndo('「专治拖延症」结算');
+  const mins = Math.ceil(t.elapsed/60);
+  if(ok){
+    const pts = fmt(-3 + 2 + 0.2*mins);
+    addPoints(pts);
+    t.result = `寸止成功，坚持 ${mins} 分钟：-3 +2 +${fmt(0.2*mins)} = ${pts} 分`;
+    toast(`✅ 寸止成功 +${pts}`);
+  }else{
+    S.points = 0;
+    S.stats.orgasm = (S.stats.orgasm||0) + 1;
+    t.result = '高潮了，积分归零';
+    toast('💦 高潮，积分归零');
+  }
+  t.finished = true;
+  save(); render();
+}
+/* 优等生 */
+function cond2Roll(){ doRoll(v=>{ S.twoPM.task2.roll = v; save(); render(); }, '🎓 优等生的诱惑掷骰'); }
+function cond2Resolve(ok){
+  const t = S.twoPM.task2;
+  if(!t || t.finished) return;
+  pushUndo('「优等生的诱惑」结算');
+  addPoints(ok ? 1 : -1);
+  t.result = ok ? '成功 +1' : '失败 -1';
+  t.finished = true;
+  save(); render();
+  toast(ok ? '🎓 成功 +1' : '🎓 失败 -1');
+}
+/* 不准湿 */
+function askWet(){
+  showModal(`<h3>💧 不准湿 · 检查</h3>
+  <p>每完成一次日常任务后，检查大阴唇是否湿润？</p>
+  <div class="row">
+    <button class="btn primary" onclick="wetYes()">💧 湿润了</button>
+    <button class="btn ghost" onclick="closeModal()">❌ 没有</button>
+  </div>`);
+}
+function wetYes(){
+  closeModal();
+  S.wet.triggered = true;
+  save(); render();
+  toast('💧 湿了……触发「不准湿」！');
+}
+function wetRoll(){
+  doRoll(v=>{
+    if(v===3){
+      S.wet.roll = 3;
+      S.wet.rerollCount = (S.wet.rerollCount||0)+1;
+      save(); render();
+      toast(S.wet.rerollCount>1 ? '又是3！请再次确认重投' : '「再来一次」：请确认重投');
+    }else{
+      S.wet.roll = v;
+      S.wet.rerollCount = 0;
+      /* 点数1/2：再次开放对应的日常任务（完整执行流程） */
+      S.wet.extra = (v===1||v===2) ? {key: v===1?'commute':'work', plan:null, roll:null, pick:null, checks:{}, mentioned:false} : null;
+      save(); render();
+    }
+  }, '💧 不准湿掷骰');
+}
+function wetResolve(ok, pts){
+  const w = S.wet;
+  if(w.finished) return;
+  pushUndo('「不准湿」结算');
+  if(w.roll===5) stopTimer('wet5');
+  if(w.roll===6) stopTimer('wet6');
+  addPoints(ok ? pts : -1);
+  w.result = ok ? `成功 +${pts}` : '失败 -1';
+  w.finished = true;
+  save(); render();
+  toast(ok ? `💧 任务成功 +${pts}` : '💧 任务失败 -1');
+}
+/* ===== 不准湿点数1/2：再次开放对应日常任务（完整执行流程） ===== */
+function wetExtraPlan(kind){
+  const ex = S.wet.extra; if(!ex) return;
+  ex.plan = kind; save(); render();
+}
+function wetExtraRoll(){
+  const ex = S.wet.extra; if(!ex || ex.roll!==null) return;
+  doRoll(v=>{
+    ex.roll = v; ex.pick = v-1;
+    save(); render();
+  }, '🎲 再次执行任务掷骰');
+}
+function wetExtraPick(i){
+  const ex = S.wet.extra; if(!ex) return;
+  ex.pick = i; save(); render();
+}
+function wetExtraCheck(which){
+  const ex = S.wet.extra; if(!ex) return;
+  toggleFlag(ex.checks, which, 0.5);
+}
+function wetExtraMention(){
+  const ex = S.wet.extra; if(!ex || ex.mentioned) return;
+  pushUndo('被提及锁屏照片 -1');
+  markOnce(ex, 'mentioned', 1, '📱 被提及锁屏照片 -1');
+}
+function wetExtraDone(){
+  const ex = S.wet.extra;
+  if(!ex || ex.pick===null || S.wet.finished) return;
+  pushUndo('「不准湿」追加任务结算');
+  const isCommute = ex.key==='commute';
+  const coeff = isCommute ? 0.8 : 1;
+  const bonus = isCommute ? 0.5 : 1;
+  /* 判定扣分（衣物未叠好/水渍/丝袜弄湿/被提及）已在勾选时即时扣除，
+     此处只结算基础分 + 额外分，避免重复扣分（与日常任务结算方式一致） */
+  const base = fmt(ex.roll * coeff);
+  const total = fmt(ex.roll * coeff + bonus);
+  addPoints(total);
+  S.stats.daily[ex.key] = (S.stats.daily[ex.key]||0) + 1;
+  S.wet.finished = true;
+  const notes = [];
+  if(isCommute){
+    if(ex.checks.fold) notes.push('衣物未叠好-0.5');
+    if(ex.checks.water) notes.push('留下水渍-0.5');
+    if(ex.checks.wet) notes.push('丝袜弄湿-0.5');
+  }else{
+    if(ex.mentioned) notes.push('被提及锁屏照片-1');
+  }
+  S.wet.result = `${isCommute?'下班路上再次执行上班路上':'立刻再次执行办公ing'}：掷出${ex.roll}点，任务结算 ${base}分 + 额外 ${bonus} = ${total}分${notes.length?`；判定扣分已即时扣除（${notes.join('、')}）`:''}`;
+  save(); render();
+  toast(`💧 不准湿完成：${total}分`);
+}
+function wetExtraFail(){
+  if(S.wet.finished) return;
+  pushUndo('「不准湿」追加任务失败');
+  addPoints(-1);
+  S.wet.finished = true;
+  S.wet.result = '再次执行任务失败，-1分';
+  save(); render();
+  toast('💧 不准湿失败 -1');
+}
+function renderWetExtra(){
+  const ex = S.wet.extra;
+  if(!ex) return '';
+  const isCommute = ex.key==='commute';
+  const coeff = isCommute ? 0.8 : 1;
+  const bonus = isCommute ? 0.5 : 1;
+  const items = isCommute ? (ex.plan==='car' ? COMMUTE_CAR : COMMUTE_WALK) : WORK;
+  let html = `<div class="sub"><div class="sub-h">${isCommute?'🌇 再次执行·上班路上（下班路上）':'💻 再次执行·办公ing（立刻）'} <span class="tag">额外 +${bonus}</span></div>`;
+  if(isCommute && !ex.plan){
+    html += `<div class="row">
+      <button class="btn" onclick="wetExtraPlan('car')">🚗 方案一·机动车</button>
+      <button class="btn" onclick="wetExtraPlan('walk')">🚶 方案二·步行/非机动车</button></div>
+      <div class="hint">需先选择出行方案，之后掷骰执行任务</div>`;
+    html += `</div>`;
+    return html;
+  }
+  if(ex.roll===null){
+    if(isCommute) html += `<div class="tag">路线：${ex.plan==='car'?'🚗 机动车':'🚶 步行/非机动车'}</div>`;
+    html += `<div class="row"><button class="btn primary" onclick="wetExtraRoll()">🎲 掷骰执行任务</button></div>`;
+    if(isCommute && ex.plan==='car') html += `<div class="warn-note">⚠️ 自己开车注意安全：好好穿平底鞋，高跟鞋放座椅下面去。</div>`;
+    html += `</div>`;
+    return html;
+  }
+  html += `<div class="roll-line">🎲 掷出 <b>${ex.roll}</b>点 → 基础 ${fmt(ex.roll*coeff)}分</div>`;
+  html += `<div class="chips">` + items.map((t,i)=>{
+    const dis = i < ex.roll-1;
+    const sel = i === ex.pick;
+    return `<button class="chip ${dis?'disabled':''} ${sel?'sel':''}" ${dis?'disabled':''} onclick="wetExtraPick(${i})" title="${t}">${i+1}${sel?' ✓':''}</button>`;
+  }).join('') + `</div>`;
+  if(ex.pick===null){
+    html += `<div class="hint">选择执行哪一级（可主动选更高等级，积分不变）</div>`;
+  }else{
+    html += `<div class="task-text">${items[ex.pick]}</div>`;
+    if(isCommute){
+      if(ex.plan==='car'){
+        html += `<div class="row"><button class="btn warn ${ex.checks.fold?'sel':''}" onclick="wetExtraCheck('fold')">衣物未叠好 (-0.5)${ex.checks.fold?' ✓':''}</button><button class="btn warn ${ex.checks.water?'sel':''}" onclick="wetExtraCheck('water')">留下水渍 (-0.5)${ex.checks.water?' ✓':''}</button></div>`;
+      }else{
+        html += `<div class="row"><button class="btn warn ${ex.checks.wet?'sel':''}" onclick="wetExtraCheck('wet')">丝袜弄湿 (-0.5)${ex.checks.wet?' ✓':''}</button></div>`;
+      }
+    }else if(ex.pick===2){
+      html += `<div class="row"><button class="btn warn" onclick="wetExtraMention()">被别人提及过锁屏照片 (-1)</button></div>`;
+    }
+    html += `<div class="row">
+      <button class="btn primary" onclick="wetExtraDone()">✅ 完成结算（含额外 +${bonus}）</button>
+      <button class="btn warn" onclick="wetExtraFail()">❌ 失败 (-1)</button></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+function wetConfirm4(){
+  const w = S.wet;
+  if(w.finished) return;
+  pushUndo('「不准湿」点数4生效');
+  S.diceMod += 1;
+  addPoints(1);
+  w.result = '今天剩余掷骰点数 +1（6点封顶）';
+  w.finished = true;
+  save(); render();
+  toast('🎲 今日剩余掷骰点数 +1（封顶6），积分 +1');
+}
+function wetTimeout(){
+  if(S.wet.finished) return;
+  pushUndo('「不准湿」超时判负');
+  addPoints(-1);
+  S.wet.result = '十分钟超时，失败 -1';
+  S.wet.finished = true;
+  save(); render();
+  toast('⏰ 十分钟超时！「不准湿」失败 -1');
+}
+/* 不准湿点数6：寸止中高潮，积分归零（与全局高潮规则一致） */
+function wetOrgasm(){
+  const w = S.wet;
+  if(w.finished) return;
+  pushUndo('「不准湿」高潮归零');
+  if(w.roll===6) stopTimer('wet6');
+  S.points = 0;
+  S.stats.orgasm = (S.stats.orgasm||0) + 1;
+  w.result = '高潮了，积分归零';
+  w.finished = true;
+  save(); render();
+  toast('💦 高潮，积分归零');
+}
+
+/* ============ 最终结算 ============ */
+function doSettle(){
+  if(S.settled) return;
+  pushUndo('最终结算');
+  const p = S.points;
+  let r = {text:'', penalty:0, fail:false};
+  if(p >= 31){ r.text = `🎉 最终分数 ${fmt(p)} ≥31：奖励允许高潮！`; r.reward = true; }
+  else if(p >= 30){ r.text = `😌 最终分数 ${fmt(p)} ≥30：寸止3次。`; }
+  else if(p >= 29){ r.text = `😌 最终分数 ${fmt(p)} ≥29：寸止4次。`; }
+  else if(p >= 28){ r.text = `😌 最终分数 ${fmt(p)} ≥28：寸止4次，最后一次需全程和同事打电话。`; }
+  else if(p >= 27){ r.text = `😳 最终分数 ${fmt(p)} ≥27：寸止4次（最后一次全程和同事打电话）。家中必须全裸，尽可能爬行移动。惩罚点 +1`; r.penalty = 1; }
+  else if(p >= 26){ r.text = `😳 最终分数 ${fmt(p)} ≥26：寸止4次（最后一次全程和同事打电话）。回家后需脱至全裸才能进家门，家中必须全裸，尽可能爬行移动。惩罚点 +2`; r.penalty = 2; }
+  else if(p >= 25){ r.text = `😨 最终分数 ${fmt(p)} ≥25：寸止4次（最后一次全程和同事打电话）。回家后需脱至全裸才能进家门，家中必须全裸，尽可能爬行移动。全裸拿外卖（仅允许遮挡面部）。惩罚点 +3`; r.penalty = 3; }
+  else if(p >= 24){ r.text = `😱 最终分数 ${fmt(p)} ≥24：寸止4次（最后一次全程和同事打电话）。回家后需脱至全裸才能进家门，家中必须全裸，尽可能爬行移动。全裸拿外卖（仅允许遮挡面部）。只能趴着学狗吃外卖，期间阴道塞入跳蛋并调至很有感觉的档位。惩罚点 +4`; r.penalty = 4; }
+  else if(p >= 23){ r.text = `💀 最终分数 ${fmt(p)} ≥23：寸止4次（前两次在家门口执行，最后一次全程和同事打电话）。回家后需脱至全裸才能进家门，家中必须全裸，尽可能爬行移动。全裸拿外卖（仅允许遮挡面部）。只能趴着学狗吃外卖，期间阴道塞入跳蛋并调至很有感觉的档位。惩罚点 +5`; r.penalty = 5; }
+  else { r.text = `💀 最终分数 ${fmt(p)} ＜23：任务彻底失败！寸止4次（前两次在家门口执行，最后一次全程和同事打电话）。回家后需要脱至全裸才能进家门，在家中必须全裸，尽可能爬行移动；全裸拿外卖（仅允许遮挡面部）。只能趴着学狗吃外卖，期间阴道塞入跳蛋并调至很有感觉的档位。第二天每次投掷骰子点数 +1（6点封顶），惩罚点 +10。`; r.penalty = 10; r.fail = true; }
+  S.penalty += r.penalty;
+  if(r.fail){ S.nextDayMod = true; S.stats.fail = (S.stats.fail||0) + 1; }
+  /* 结算：未放弃的惩罚天数-1，归零的自动完成清理；多天惩罚继续生效 */
+  if(S.activePenalties.length){
+    const remain = [];
+    S.activePenalties.forEach(p=>{
+      p.days = Math.max(0, p.days-1);
+      if(p.days>0) remain.push(p);
+    });
+    S.activePenalties = remain;
+    if(remain.length) toast(`⛓️ 有 ${remain.length} 项惩罚继续生效（剩余天数已更新）`);
+  }
+  S.settled = true;
+  S.lastResult = r;
+  save(); render();
+  toast('🏁 已结算');
+}
+function zcFail(){
+  pushUndo('寸止失败 +10');
+  S.penalty += 10;
+  save(); render();
+  toast('💔 寸止失败，惩罚点 +10');
+}
+function nextDay(){
+  pushUndo(`进入第 ${S.day+1} 天`);
+  for(const id in T) stopTimer(id);
+  S.prevFailMod = S.nextDayMod;
+  S.nextDayMod = false;
+  S.day++;
+  S.points = 0;
+  S.clothing = defaultState().clothing;
+  S.daily = defaultState().daily;
+  S.gambler = defaultState().gambler;
+  S.twoPM = {done:false, scoreNote:null, task1:null, task2:null};
+  S.wet = {triggered:false, finished:false, roll:null, rerollCount:0, result:'', extra:null};
+  S.punishChosen = false;
+  S.settled = false;
+  S.lastResult = null;
+  S.diceMod = 0;
+  save(); render();
+  toast(`🌅 第 ${S.day} 天开始${S.penalty>0?'，需先清算惩罚点！':''}`);
+}
+
+/* ============ 设置 ============ */
+function openSettings(){
+  showModal(`<h3>⚙️ 设置</h3>
+  <div class="set-row"><span>手动调整积分（当前 ${fmt(S.points)}）</span></div>
+  <div class="row">
+    <button class="btn small" onclick="adjPoints(-5)">-5</button>
+    <button class="btn small" onclick="adjPoints(-1)">-1</button>
+    <button class="btn small" onclick="adjPoints(-0.5)">-0.5</button>
+    <button class="btn small" onclick="adjPoints(0.5)">+0.5</button>
+    <button class="btn small" onclick="adjPoints(1)">+1</button>
+    <button class="btn small" onclick="adjPoints(5)">+5</button>
+  </div>
+  <div class="set-row"><span>昨日任务失败（本日掷骰 +1，6点封顶）</span>
+    <button class="chip ${S.prevFailMod?'sel':''}" onclick="togglePrevFail()">${S.prevFailMod?'开启':'关闭'}</button></div>
+  <div class="set-row"><span>今日剩余掷骰 +1（不准湿任务4）</span>
+    <button class="chip ${S.diceMod?'sel':''}" onclick="toggleDiceMod()">${S.diceMod?'开启':'关闭'}</button></div>
+  <div class="set-row"><span>惩罚点（当前 ${S.penalty}）</span>
+    <button class="btn small" onclick="adjPenalty(-1)">-1</button>
+    <button class="btn small" onclick="adjPenalty(1)">+1</button></div>
+  <div class="set-row"><span>📦 存档备份</span>
+    <button class="btn small" onclick="exportSave()">📤 导出JSON</button>
+    <button class="btn small" onclick="document.getElementById('importFile').click()">📥 导入</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importSave(this)"/></div>
+  <div class="set-row"><span>🎨 自定义赌徒任务（存本机，加入1~3分池）</span></div>
+  ${[1,2,3].map(p=>{
+    const cur = (S.custom&&S.custom['g'+p]) || [];
+    let s = `<div class="set-row"><span>${p}分池 · 自定义 ${cur.length}/10 条</span>
+      <button class="btn small" onclick="customAdd(${p})">＋添加</button></div>`;
+    if(cur.length){
+      s += cur.map((t,i)=>`<div class="set-row" style="margin:4px 0"><span style="flex:1;color:var(--dim)">${i+1}. ${esc(t)}</span>
+        <button class="btn small warn" onclick="customDel(${p},${i})">删</button></div>`).join('');
+    }
+    s += `<div class="row" style="margin:2px 0 10px"><input id="customInput${p}" maxlength="80" placeholder="输入任务文案，回车或点添加…" onkeydown="if(event.key==='Enter')customAdd(${p})"/></div>`;
+    return s;
+  }).join('')}
+  <div class="set-row"><button class="btn warn" onclick="if(confirm('确定重置全部数据？此操作不可恢复！'))resetAll()">🧹 重置全部数据</button></div>
+  <div class="set-row"><button class="btn ghost" onclick="closeModal()">关闭</button></div>`);
+}
+function adjPoints(d){ addPoints(d); save(); render(); }
+function adjPenalty(d){ S.penalty = Math.max(0, S.penalty + d); save(); render(); }
+function togglePrevFail(){ S.prevFailMod = !S.prevFailMod; save(); render(); openSettings(); }
+function toggleDiceMod(){ S.diceMod = S.diceMod ? 0 : 1; save(); render(); openSettings(); }
+function resetAll(){
+  localStorage.removeItem(LS_KEY);
+  UNDO = [];
+  S = defaultState(); applyCustom(); save(); render();
+  closeModal();
+  toast('🧹 已重置全部数据');
+}
+function exportSave(){
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `gongfen_save_day${S.day}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  toast('📤 存档已导出');
+}
+function importSave(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data || typeof data!=='object' || typeof data.day!=='number'){ toast('✗ 存档文件格式无效'); return; }
+      if(!confirm('导入将覆盖当前存档，确定继续？')) return;
+      for(const id in T) stopTimer(id);
+      UNDO = [];
+      S = normalize(data);
+      applyCustom();
+      save(); render(); closeModal();
+      toast('📥 存档导入成功');
+    }catch(err){ toast('✗ 存档文件解析失败'); }
+  };
+  reader.readAsText(f);
+  input.value = '';
+}
+function customAdd(p){
+  const inp = document.getElementById('customInput'+p);
+  const v = (inp ? inp.value : '').trim();
+  if(!v){ toast('请输入任务文案'); return; }
+  const arr = S.custom['g'+p] || (S.custom['g'+p]=[]);
+  if(arr.length >= 10){ toast('每个池最多10条自定义'); return; }
+  arr.push(v);
+  applyCustom(); save(); render();
+  openSettings();
+  toast(`🎨 已添加 ${p}分池自定义任务`);
+}
+function customDel(p, i){
+  const arr = S.custom['g'+p] || [];
+  if(!arr[i]) return;
+  arr.splice(i,1);
+  applyCustom(); save(); render();
+  openSettings();
+  toast('🎨 已删除自定义任务');
+}
+function openStats(){
+  const s = S.stats || {};
+  const daily = s.daily || {};
+  let total = 0, rows = '';
+  DAILY_ORDER.forEach(k=>{
+    const n = daily[k] || 0; total += n;
+    rows += `<div class="set-row"><span>${DAILY_META[k].emoji} ${DAILY_META[k].name}</span><span class="tag">完成 ${n} 次</span></div>`;
+  });
+  showModal(`<h3>📊 生涯统计</h3>
+  <div class="set-row"><span>当前天数</span><span class="tag">第 ${S.day} 天</span></div>
+  <div class="set-row"><span>历史最高积分</span><span class="tag">${fmt(s.high||0)} 分</span></div>
+  <div class="set-row"><span>任务彻底失败（＜23分）</span><span class="tag">${s.fail||0} 次</span></div>
+  <div class="set-row"><span>高潮次数</span><span class="tag">${s.orgasm||0} 次</span></div>
+  <div class="set-row"><span>服装结算次数</span><span class="tag">${s.cloth||0} 次</span></div>
+  <div class="set-row"><span>日常任务总完成</span><span class="tag">${total} 次</span></div>
+  ${rows}
+  <div class="row"><button class="btn ghost" onclick="closeModal()">关闭</button></div>`);
+}
+
+/* ============ 渲染 ============ */
+function render(){
+  renderTop();
+  document.getElementById('penBar').innerHTML = renderPenBar();
+  document.getElementById('punishSec').innerHTML = renderPunish();
+  document.getElementById('clothSec').innerHTML = renderCloth();
+  document.getElementById('dailySec').innerHTML = renderDaily();
+  document.getElementById('gamblerSec').innerHTML = renderGambler();
+  document.getElementById('condSec').innerHTML = renderCond();
+  document.getElementById('settleSec').innerHTML = renderSettle();
+  renderTimers();
+}
+function renderTop(){
+  document.getElementById('topDay').textContent = `📅 第${S.day}天`;
+  document.getElementById('topPen').textContent = S.penalty>0 ? `⚠️ 惩罚 ${S.penalty}` : '';
+  let chips = '';
+  if(S.prevFailMod) chips += `<span class="top-chip">昨日失败·掷骰+1</span>`;
+  if(S.diceMod) chips += `<span class="top-chip">剩余掷骰+1</span>`;
+  if(S.twoPM.done) chips += `<span class="top-chip">两点已结算</span>`;
+  document.getElementById('topChips').innerHTML = chips;
+  document.getElementById('topPts').textContent = `${fmt(S.points)} 分`;
+}
+function renderPunish(){
+  let html = '';
+  /* 集中选择面板：仅当天开始时（有惩罚点且尚未选择）显示 */
+  if(S.penalty>0 && !S.punishChosen){
+    html += `<div class="card warn-card"><div class="card-h"><span>⚠️ 惩罚清算</span><span class="tag">剩余 ${S.penalty} 点</span></div>`;
+    html += `<div class="hint">每天只有一次集中选择机会，<b>完全自选</b>：点击池级别 → 在列表中直接选择任务，选择后立即扣除对应惩罚点并在上方横幅持续生效；<b>可重复选择同一任务，重复即叠加</b>，n=选择次数（次数/时长/天数按 n 计算）。执行中可随时「放弃」（惩罚点加回，顺延至明日清算）。一级池 -1点/次、二级池 -2点/次、三级池 -5点/次。</div>`;
+    html += `<div class="row">`;
+    [1,2,3].forEach(l=>{ html += `<button class="btn" onclick="punishShowPool(${l})">${['一','二','三'][l-1]}级池（-${PUNISH_VAL[l]}点）</button>`; });
+    html += `</div>`;
+    html += `</div>`;
+  }
+  return html;
+}
+/* 生效中惩罚侧边栏横幅（固定在顶部栏下方） */
+function renderPenBar(){
+  const ap = S.activePenalties;
+  if(!ap.length) return '';
+  const showAll = S.penBarExpanded;
+  const shown = showAll ? ap : ap.slice(0,5);
+  let html = `<div class="penbar-h">⛓️ 生效中惩罚 ${ap.length}项${ap.length>5?` <button class="pen-toggle" onclick="togglePenBar()">${showAll?'收起 ▲':'展开 ▼'}</button>`:''}</div>`;
+  shown.forEach((p,i)=>{
+    const def = PUNISH[p.level] && PUNISH[p.level][p.idx];
+    const totalDays = def ? def.days(p.count) : (p.days || 1);
+    const daysText = totalDays>1 ? `剩余 ${p.days} 天` : (p.count>1 ? `×${p.count}（当日完成）` : '生效至今日');
+    html += `<div class="pen-item"><span class="pen-t clickable" onclick="penShowDetail(${i})">${p.short}${p.count>1?' ×'+p.count:''} <span class="pen-eye">👁查看</span></span><span class="pen-d">${daysText}</span><button class="pen-x" onclick="penaltyAbandon(${i})">✖放弃</button></div>`;
+  });
+  return html;
+}
+/* 点击横幅惩罚项：弹出完整文本（含叠加后实际效果） */
+function penShowDetail(pi){
+  const p = S.activePenalties[pi]; if(!p) return;
+  const def = (PUNISH[p.level] && PUNISH[p.level][p.idx]) ? PUNISH[p.level][p.idx] : null;
+  const text = def ? def.text(p.count) : (p.short || '（无法显示原文）');
+  const totalDays = def ? def.days(p.count) : (p.days || 1);
+  const daysText = totalDays>1 ? `剩余 ${p.days} 天` : (p.count>1 ? `×${p.count}（当日完成）` : '生效至今日');
+  const back = PUNISH_VAL[p.level] * p.count;
+  showModal(`<h3>⛓️ ${p.short}${p.count>1?' ×'+p.count:''}</h3>
+  <div class="row" style="margin:6px 0"><span class="tag">${daysText}</span><span class="tag">共扣惩罚点 ${back}</span></div>
+  <div class="task-text">${text}</div>
+  <div class="row">
+    <button class="btn warn" onclick="penaltyAbandon(${pi});closeModal()">✖放弃（惩罚点 +${back}）</button>
+    <button class="btn ghost" onclick="closeModal()">关闭</button></div>`);
+}
+function renderCloth(){
+  const c = S.clothing;
+  let html = `<div class="card"><div class="card-h"><span>👗 服装自选</span>${c.done?'<span class="badge">已完成</span>':''}</div>`;
+  if(S.penalty>0 && !S.punishChosen && !c.done){
+    html += `<div class="hint">⚠️ 需先完成今日惩罚清算（集中选择）才能开始选衣</div></div>`;
+    return html;
+  }
+  if(c.done){
+    html += `<div class="done-line">上装：${CLOTH_TOP[c.picks[0]]}</div>`;
+    html += `<div class="done-line">下装：${CLOTH_BOT[c.picks[1]]}</div>`;
+    html += `<div class="done-line">内搭：${CLOTH_IN[c.picks[2]]}</div>`;
+    const ex = [];
+    if(c.extras.outer) ex.push('🧥 多穿一件外搭(-1)');
+    if(c.extras.st) ex.push('🧦 过膝丝袜/开裆裤袜(+1)');
+    if(c.extras.plug) ex.push('🔌 出门塞肛塞(+1)');
+    if(c.extras.heels) ex.push('👠 鞋跟>5cm(+1)');
+    if(ex.length) html += `<div class="done-line">额外：${ex.join('、')}</div>`;
+    html += `<div class="total-line">服装合计：${fmt(c.points)} 分</div></div>`;
+    return html;
+  }
+  if(c.rolls[0]===null){
+    html += `<div class="row"><button class="btn primary big" onclick="clothRoll()">🎲 掷三次骰子选衣</button></div>`;
+    html += `<div class="hint">点数对应积分：1→0 · 2→0.5 · 3→1 · 4→1.5 · 5→2 · 6→2.5；可主动选择更高等级服装，积分不变；可花1积分全部重掷一次。</div></div>`;
+    return html;
+  }
+  html += `<div class="row"><button class="btn ghost" onclick="clothReroll()" ${c.rerollUsed?'disabled':''}>🔄 全部重掷（-1积分）${c.rerollUsed?'· 已用':''}</button></div>`;
+  const rows = [
+    ['上装', CLOTH_TOP, c.rolls[0], c.picks[0], 0],
+    ['下装', CLOTH_BOT, c.rolls[1], c.picks[1], 1],
+    ['内搭', CLOTH_IN, c.rolls[2], c.picks[2], 2]
+  ];
+  for(const [name, list, roll, pick, idx] of rows){
+    html += `<div class="sub"><div class="sub-h">${name} <span class="die">${roll}</span> <span class="tag">+${PTS[roll-1]}分</span></div>`;
+    html += `<div class="chips">`;
+    for(let i=0;i<6;i++){
+      const dis = i < roll-1;
+      const sel = i === pick;
+      html += `<button class="chip ${dis?'disabled':''} ${sel?'sel':''}" ${dis?'disabled':''} onclick="pickCloth(${idx},${i})" title="${list[i]}">${i+1}</button>`;
+    }
+    html += `</div><div class="task-text">${pick!=null?list[pick]:'点击数字选择（可高于掷出点数）'}</div></div>`;
+  }
+  html += `<div class="sub"><div class="sub-h">加减分选项</div><div class="chips">
+    <button class="chip ${c.extras.outer?'sel':''}" onclick="clothExtra('outer')">🧥 外搭遮挡 -1</button>
+    <button class="chip ${c.extras.st?'sel':''}" onclick="clothExtra('st')">🧦 过膝丝袜/开裆裤袜 +1</button>
+    <button class="chip ${c.extras.plug?'sel':''}" onclick="clothExtra('plug')">🔌 出门塞肛塞 +1</button>
+    <button class="chip ${c.extras.heels?'sel':''}" onclick="clothExtra('heels')">👠 鞋跟>5cm +1</button>
+  </div></div>`;
+  html += `<div class="total-line">服装小计：${fmt(clothSubtotal())} 分</div>`;
+  html += `<div class="row"><button class="btn primary big" onclick="clothConfirm()">✅ 确认服装并计入积分</button></div>`;
+  html += `</div>`;
+  return html;
+}
+function renderDaily(){
+  let html = `<div class="card"><div class="card-h"><span>📋 日常任务</span></div>`;
+  html += `<div class="hint">积分 = 掷出点数 × 任务系数 + 结算加减分；可主动选更高等级（积分不变）；失败不得分也不扣分。</div>`;
+  html += DAILY_ORDER.map(k=>dailyCard(k, DAILY_META[k])).join('');
+  html += `</div>`;
+  return html;
+}
+function dailyCard(k, d){
+  const st = S.daily[k];
+  d.key = k;
+  let html = `<div class="card"><div class="card-h"><span>${d.emoji} ${d.name}</span><span class="tag">系数×${d.coeff}</span>${st.done?'<span class="badge">已完成</span>':''}</div>`;
+  if(st.done){
+    html += `<div class="done-line">点数 ${st.roll} × ${d.coeff} = ${fmt(st.pts)} 分${st.pick!=null?' · 执行第'+(st.pick+1)+'级':''}</div>`;
+    if(d.key==='commute'){
+      const ch = st.checks;
+      if(ch.fold) html += `<div class="done-line">- 衣物未叠好 -0.5</div>`;
+      if(ch.water) html += `<div class="done-line">- 留下水渍 -0.5</div>`;
+      if(ch.wet) html += `<div class="done-line">- 丝袜弄湿 -0.5</div>`;
+    }
+    if(d.key==='toilet' && st.drink) html += `<div class="done-line">+ 喝尿小抿一口 +1</div>`;
+    if(d.key==='eat' && st.hide>0) html += `<div class="done-line">- 遮挡躲避 ×${st.hide} = -${fmt(st.hide*0.5)}</div>`;
+    if(d.key==='work' && st.pick===2){
+      html += `<div class="hint">点数3专属判定：锁屏照片必须清晰、打光良好，正常使用手机；被别人提及过锁屏照片，扣1分。</div>`;
+      if(!st.mentioned) html += `<div class="row"><button class="btn warn" onclick="workMention()">📱 被别人提及过锁屏照片 (-1)</button></div>`;
+      else html += `<div class="done-line">- 被别人提及过锁屏照片 -1</div>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+  if(d.key==='commute' && !st.plan){
+    html += `<div class="hint">先选择出行方案（人不可能同时走两条路）</div>`;
+    html += `<div class="row"><button class="btn primary" onclick="dailyPlan('car')">🚗 方案一 · 机动车</button><button class="btn primary" onclick="dailyPlan('walk')">🚶 方案二 · 步行/非机动车</button></div></div>`;
+    return html;
+  }
+  if(st.roll===null){
+    if(d.key==='commute'){
+      html += `<div class="row"><span class="tag">路线：${st.plan==='car'?'🚗 机动车':'🚶 步行/非机动车'}</span><button class="btn small ghost" onclick="dailyPlanReset()">更换</button></div>`;
+      if(st.plan==='car') html += `<div class="warn-note">⚠️ 自己开车注意安全：好好穿平底鞋，高跟鞋放座椅下面去。</div>`;
+    }
+    html += `<div class="row"><button class="btn primary" onclick="dailyRoll('${d.key}')">🎲 掷骰确定任务</button>
+    <button class="btn ghost" onclick="dailyFail('${d.key}')">放弃（不得分）</button></div></div>`;
+    return html;
+  }
+  const items = d.key==='commute' ? d.items[st.plan] : d.items;
+  const pts = st.roll * d.coeff;
+  html += `<div class="roll-line">🎲 掷出 <b>${st.roll}</b> 点 → 基础 ${fmt(pts)} 分</div>`;
+  html += `<div class="chips">`;
+  for(let i=0;i<items.length;i++){
+    const dis = i < st.roll-1;
+    const sel = i===st.pick;
+    html += `<button class="chip ${dis?'disabled':''} ${sel?'sel':''}" ${dis?'disabled':''} onclick="dailyPick('${d.key}',${i})" title="${items[i]}">${i+1}</button>`;
+  }
+  html += `</div>`;
+  if(st.pick===null){
+    html += `<div class="hint">选择执行哪一级（可主动选更高等级，积分不变）</div>`;
+  }else{
+    html += `<div class="task-text">${items[st.pick]}</div>`;
+    if(d.key==='commute'){
+      if(st.plan==='car'){
+        html += `<div class="hint">脱下的衣物（除鞋子）叠好放副驾仪表台上，不然 -0.5。</div>`;
+        html += `<div class="row"><button class="btn warn ${st.checks.fold?'sel':''}" onclick="dailyCheck('commute','fold')">衣物未叠好 (-0.5)${st.checks.fold?' ✓':''}</button>
+        <button class="btn warn ${st.checks.water?'sel':''}" onclick="dailyCheck('commute','water')">留下水渍 (-0.5)${st.checks.water?' ✓':''}</button></div>`;
+      }else{
+        html += `<div class="row"><button class="btn warn ${st.checks.wet?'sel':''}" onclick="dailyCheck('commute','wet')">丝袜弄湿 (-0.5)${st.checks.wet?' ✓':''}</button></div>`;
+      }
+    }
+    if(d.key==='toilet'){
+      html += `<div class="row"><button class="btn gold ${st.drink?'sel':''}" onclick="dailyDrink()">🥤 带水杯接尿小抿一口 (+1)${st.drink?' ✓':''}</button></div>`;
+    }
+    if(d.key==='eat'){
+      html += `<div class="row"><button class="btn gold" onclick="eatHide()">🛡️ 遮挡躲避 (-0.5)</button><span class="tag">已按 ${st.hide} 次 · 共 -${fmt(st.hide*0.5)}</span></div>`;
+    }
+    if(d.key==='meeting' && st.pick===5){
+      html += timerRow('m5', 300, '跳蛋保持5分钟');
+    }
+    if(d.key==='work' && (st.pick===3 || st.pick===5)){
+      html += timerRow('w15', 900, '腰以下裸露15分钟');
+    }
+    if(d.key==='work' && st.pick===2){
+      html += `<div class="hint">点数3专属判定：锁屏照片必须清晰、打光良好，正常使用手机；被别人提及过锁屏照片，扣1分。</div>`;
+      if(!st.mentioned) html += `<div class="row"><button class="btn warn" onclick="workMention()">📱 被别人提及过锁屏照片 (-1)</button></div>`;
+      else html += `<div class="done-line">- 被别人提及过锁屏照片 -1</div>`;
+    }
+    html += `<div class="row">
+      <button class="btn primary" onclick="dailyDone('${d.key}')">✅ 完成结算</button>
+      <button class="btn ghost" onclick="dailyFail('${d.key}')">失败/放弃</button></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+function renderGambler(){
+  const used = S.gambler.slots.filter(s=>s.status!=='empty').length;
+  let html = `<div class="card"><div class="card-h"><span>🎰 赌徒挑战</span><span class="tag">${used}/3</span></div>`;
+  html += `<div class="hint">完全自选（不掷骰）；成功加分、失败扣分；每项每天至多一次；三个槽可同时进行、互不干扰。${S.twoPM.done?'<br>⚠️ 两点已结算：带「不可用」标记的任务已从选择池禁用，两点前已选中的可继续完成。':''}</div>`;
+  for(let si=0; si<3; si++) html += gamblerSlot(si);
+  html += `</div>`;
+  return html;
+}
+function gamblerSlot(si){
+  const slot = S.gambler.slots[si];
+  const statusText = {done:'✅ 已完成', failed:'❌ 失败', active:'⏳ 进行中', empty:'⬜ 空'}[slot.status] || '⬜ 空';
+  let html = `<div class="sub"><div class="sub-h">槽 ${si+1} <span class="tag">${statusText}</span></div>`;
+  if(slot.status==='empty'){
+    html += `<div class="row">`;
+    [1,2,3].forEach(pool=>{
+      const n = gamblerAvailableTasks(pool).length;
+      html += `<button class="btn small" ${n?'':'disabled'} onclick="gamblerShowPool(${si},${pool})">${pool}分池${n?`（${n}项）`:''}</button>`;
+    });
+    html += `</div>`;
+    html += `<div class="hint">点击分值池，从列表中选择一项任务</div>`;
+  }else if(slot.status==='active'){
+    html += `<div class="task-text">${esc(GAMBLER[slot.pool][slot.idx])}</div>`;
+    if(S.twoPM.done && (GAMBLER_LOCKED[slot.pool]||[]).includes(slot.idx)){
+      html += `<div class="hint">⏳ 该任务已过下午两点，但两点前已选中的不受影响，可继续执行。</div>`;
+    }
+    html += `<div class="row">
+      <button class="btn primary" onclick="gamblerResolve(${si},1)">✅ 完成 (+${slot.pool})</button>
+      <button class="btn warn" onclick="gamblerResolve(${si},0)">❌ 失败 (-${slot.pool})</button>
+      <button class="btn ghost" onclick="gamblerCancel(${si})">取消选择</button></div>`;
+  }else{
+    html += `<div class="task-text">${esc(GAMBLER[slot.pool][slot.idx])}</div>`;
+    html += `<div class="log-line">${slot.status==='done'?`✅ 完成 +${slot.pool}`:slot.status==='failed'?`❌ 失败 -${slot.pool}`:'已结算'}</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+function renderCond(){
+  let html = `<div class="card"><div class="card-h"><span>⏰ 条件任务</span>${S.twoPM.done?'<span class="badge pink">两点已结算</span>':''}</div>`;
+  if(!S.twoPM.done){
+    html += `<div class="row"><button class="btn gold big" onclick="twoPM()">🕑 模拟下午两点结算</button></div>`;
+    html += `<div class="hint">按下后：分数&lt;15 触发「专治拖延症」；分数&gt;22 触发「优等生的诱惑」；并禁用部分耗时较长的赌徒挑战（两点前已选中的不受影响）。</div>`;
+  }else if(S.twoPM.scoreNote!==null){
+    html += `<div class="done-line">🕑 两点时积分：${S.twoPM.scoreNote}</div>`;
+  }
+  /* 专治拖延症 */
+  const t1 = S.twoPM.task1;
+  if(t1 && !t1.finished){
+    html += `<div class="sub"><div class="sub-h">⏳ 专治拖延症 <span class="tag">基础 -3</span></div>`;
+    html += `<div class="hint">「这么喜欢拖延，那高潮也拖延吧」——寸止成功 +2，每坚持一分钟 +0.2（分钟向上取整）。</div>`;
+    if(t1.roll===null){
+      html += `<div class="row"><button class="btn primary" onclick="cond1Roll()">🎲 掷骰决定任务</button></div>`;
+    }else{
+      html += `<div class="task-text">${COND1[t1.roll-1]}</div>`;
+      if(!t1.started){
+        html += `<div class="row"><button class="btn gold" onclick="cond1Start()">▶ 开始寸止计时</button></div>`;
+      }else if(!t1.stopped){
+        html += timerRow('cond1', null, '寸止坚持计时');
+        html += `<div class="row"><button class="btn gold" onclick="cond1Stop()">⏹ 停止并结算</button>
+        <button class="btn warn" onclick="cond1Resolve(0)">💦 高潮了（积分归零）</button></div>`;
+      }else{
+        const mins = Math.ceil(t1.elapsed/60);
+        html += `<div class="done-line">坚持了 ${mins} 分钟（${fmtTime(t1.elapsed)}）</div>`;
+        html += `<div class="row"><button class="btn primary" onclick="cond1Resolve(1)">✅ 寸止成功（-3 +2 +${fmt(0.2*mins)}）</button>
+        <button class="btn warn" onclick="cond1Resolve(0)">💦 高潮了（积分归零）</button></div>`;
+      }
+    }
+    html += `</div>`;
+  }
+  if(t1 && t1.finished){
+    html += `<div class="done-line">⏳ 专治拖延症：${t1.result}</div>`;
+  }
+  /* 优等生的诱惑 */
+  const t2 = S.twoPM.task2;
+  if(t2 && !t2.finished){
+    html += `<div class="sub"><div class="sub-h">🎓 优等生的诱惑</div>`;
+    html += `<div class="hint">「这么短时间就取得了这么高分，想必你渴望更加有难度游戏任务」——成功 +1，失败 -1。</div>`;
+    if(t2.roll===null){
+      html += `<div class="row"><button class="btn primary" onclick="cond2Roll()">🎲 掷骰决定任务</button></div>`;
+    }else{
+      html += `<div class="task-text">${COND2[t2.roll-1]}</div>`;
+      html += `<div class="row"><button class="btn primary" onclick="cond2Resolve(1)">✅ 完成 (+1)</button>
+      <button class="btn warn" onclick="cond2Resolve(0)">❌ 失败 (-1)</button></div>`;
+    }
+    html += `</div>`;
+  }
+  if(t2 && t2.finished){
+    html += `<div class="done-line">🎓 优等生的诱惑：${t2.result}</div>`;
+  }
+  /* 不准湿 */
+  const w = S.wet;
+  if(w.triggered && !w.finished){
+    html += `<div class="sub"><div class="sub-h">💧 不准湿 <span class="tag">成功 +1 / 失败 -1</span></div>`;
+    html += `<div class="hint">「谁叫你湿啦」——每天至多执行一次。</div>`;
+    if(w.roll===null){
+      html += `<div class="row"><button class="btn primary" onclick="wetRoll()">🎲 掷骰决定任务</button></div>`;
+    }else if(w.roll===3){
+      html += `<div class="task-text">${COND3[2]}</div>`;
+      html += `<div class="warn-note">⚠️ 请先按说明在阴道插入假阳具（保持到下次任务完成），确认后点击下方按钮重投；若再次掷出3，需继续确认重投。</div>`;
+      html += `<div class="row"><button class="btn gold" onclick="wetRoll()">🎲 已插入，确认重投</button></div>`;
+    }else{
+      html += `<div class="task-text">${COND3[w.roll-1]}</div>`;
+      if(w.roll===4){
+        html += `<div class="row"><button class="btn primary" onclick="wetConfirm4()">✅ 确认生效 (+1)</button></div>`;
+      }else if(w.roll===6){
+        html += `<div class="row timer-row">
+          <button class="btn small" onclick="startTimer('wet6',600,wetTimeout)">▶ 开始限时</button>
+          <button class="btn small" onclick="stopTimerKeep('wet6')">⏸ 停止</button>
+          <span class="tmr" data-tid="wet6">10:00</span>
+          <span class="tag">十分钟限时（到点自动判负）</span></div>`;
+        html += `<div class="row"><button class="btn primary" onclick="wetResolve(1,1)">✅ 完成 (+1)</button>
+        <button class="btn warn" onclick="wetTimeout()">⏰ 超时 (-1)</button>
+        <button class="btn warn" onclick="wetOrgasm()">💦 高潮（积分归零）</button></div>`;
+      }else if(w.roll===5){
+        html += timerRow('wet5', 300, '五分钟限时');
+        html += `<div class="row"><button class="btn primary" onclick="wetResolve(1,1)">✅ 完成 (+1)</button>
+        <button class="btn warn" onclick="wetResolve(0,1)">❌ 失败 (-1)</button></div>`;
+      }else if(w.roll===1 || w.roll===2){
+        html += renderWetExtra();
+      }
+    }
+    html += `</div>`;
+  }
+  if(w.finished){
+    html += `<div class="done-line">💧 不准湿：${w.result}</div>`;
+  }
+  if(!w.triggered && !w.finished){
+    html += `<div class="hint">💧 每完成一次日常任务后，检查大阴唇是否湿润（每天至多触发一次）。</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+function renderSettle(){
+  let html = `<div class="card"><div class="card-h"><span>🏁 最终结算与奖惩</span></div>`;
+  if(!S.settled){
+    html += `<div class="row"><button class="btn primary big" onclick="doSettle()">🏁 下班，最终结算</button></div>`;
+    html += `<div class="hint">＞31 奖励高潮；30 寸止3次；29 寸止4次；28 寸止4次+电话；27~23 逐级加重并加惩罚点；＜23 彻底失败（次日掷骰+1、惩罚点+10）。</div>`;
+    html += `<div class="hint">⚠️ 若两点触发的条件任务未完成，结算前请先自行处理。</div>`;
+  }else{
+    html += `<div class="result-box">${S.lastResult.text}</div>`;
+    html += `<div class="hint">惩罚点（含本次结算）：${S.penalty}，明天选衣前需全部清算。</div>`;
+    if(!S.lastResult.reward) html += `<div class="row"><button class="btn warn" onclick="zcFail()">💔 寸止失败（惩罚点 +10）</button></div>`;
+    html += `<div class="row"><button class="btn gold big" onclick="nextDay()">🌅 进入第 ${S.day+1} 天</button></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+/* ============ 启动 ============ */
+render();
+
+/* ============ 年龄确认门（未满18岁自动退出） ============ */
+(function(){
+  var gate = document.getElementById('ageGate');
+  if(!gate) return;
+  var remembered = false;
+  try{ remembered = localStorage.getItem('age18_ok') === '1'; }catch(e){}
+  if(remembered){ gate.classList.add('hidden'); return; }
+  var yesBtn = document.getElementById('ageYes');
+  var noBtn = document.getElementById('ageNo');
+  var rem = document.getElementById('ageRemember');
+  yesBtn.onclick = function(){
+    try{ if(rem && rem.checked) localStorage.setItem('age18_ok', '1'); }catch(e){}
+    gate.classList.add('hidden');
+  };
+  noBtn.onclick = function(){
+    var box = gate.querySelector('.age-box');
+    if(box) box.innerHTML = '<div class="age-icon">🚫</div><h2>访问已拒绝</h2><p>本游戏仅限年满18周岁的用户使用。<br>即将退出…</p>';
+    try{ window.close(); }catch(e){}
+    setTimeout(function(){
+      var b = document.body;
+      if(b) b.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#120d1c;color:#ff6b6b;font-weight:bold;font-size:16px">本游戏仅限年满18周岁的用户使用</div>';
+    }, 1200);
+  };
+})();
+</script>
+</body>
+</html>
